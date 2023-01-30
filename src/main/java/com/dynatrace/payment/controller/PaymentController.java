@@ -2,6 +2,7 @@ package com.dynatrace.payment.controller;
 
 import com.dynatrace.payment.model.DynaPay;
 import com.dynatrace.payment.model.Payment;
+import com.dynatrace.payment.repository.ConfigRepository;
 import com.dynatrace.payment.repository.DynaPayRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -11,20 +12,17 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/api/v1/")
-public class PaymentController {
-    @Value("${added.workload.cpu}")
-    private long cpuPressure;
-    @Value("${added.workload.ram}")
-    private int memPressureMb;
-
+@RequestMapping("/api/v1/payment")
+public class PaymentController extends HardworkingController {
     @Autowired
     DynaPayRepository dynaPayRepository;
+    @Autowired
+    ConfigRepository configRepository;
 
 
 
     // make a payment
-    @PostMapping("/payment")
+    @PostMapping("")
     public Payment createPayment(@RequestBody Payment payment) {
         DynaPay dynaPay = dynaPayRepository.submitPayment(payment);
         payment.setSucceeded(dynaPay.isSucceeded());
@@ -32,23 +30,9 @@ public class PaymentController {
         return payment;
     }
 
-    private void simulateHardWork() {
-        int arraySize = (int)((long)this.memPressureMb * 1024L * 1024L / 8L);
-        if (arraySize < 0) {
-            arraySize = Integer.MAX_VALUE;
-        }
-        long[] longs = new long[arraySize];
-        int j = 0;
-        for(long i = 0; i < this.cpuPressure; i++, j++) {
-            j++;
-            if (j >= arraySize) {
-                j = 0;
-            }
-            try {
-                if (longs[j] > Integer.MAX_VALUE) {
-                    longs[j] = (long) Integer.MIN_VALUE;
-                }
-            } catch (Exception ignored) {};
-        }
+
+    @Override
+    public ConfigRepository getConfigRepository() {
+        return configRepository;
     }
 }
