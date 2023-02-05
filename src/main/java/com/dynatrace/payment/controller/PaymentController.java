@@ -4,6 +4,8 @@ import com.dynatrace.payment.model.DynaPay;
 import com.dynatrace.payment.model.Payment;
 import com.dynatrace.payment.repository.ConfigRepository;
 import com.dynatrace.payment.repository.DynaPayRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -18,6 +20,7 @@ public class PaymentController extends HardworkingController {
     DynaPayRepository dynaPayRepository;
     @Autowired
     ConfigRepository configRepository;
+    private Logger logger = LoggerFactory.getLogger(PaymentController.class);
 
 
 
@@ -27,6 +30,7 @@ public class PaymentController extends HardworkingController {
         DynaPay dynaPay = dynaPayRepository.submitPayment(payment);
         payment.setSucceeded(dynaPay.isSucceeded());
         payment.setMessage(dynaPay.getMessage());
+        logger.info("Payment Processing Info: " + dynaPay.isSucceeded() + " message: " + dynaPay.getMessage());
         return payment;
     }
 

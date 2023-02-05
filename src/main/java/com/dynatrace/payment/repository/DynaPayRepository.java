@@ -19,7 +19,7 @@ public class DynaPayRepository {
     public DynaPayRepository() {
         restTemplate = new RestTemplate();
     }
-    Logger logger = LoggerFactory.getLogger(DynaPayRepository.class);
+    private Logger logger = LoggerFactory.getLogger(DynaPayRepository.class);
 
 
 
